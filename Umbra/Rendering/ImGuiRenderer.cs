@@ -6,13 +6,13 @@ using System.Reflection;
 using ImGuiNET;
 using Veldrid;
 
-namespace Umbra.Rendering.ImGui
+namespace Umbra.Rendering
 {
     /// <summary>
     /// Can render draw lists produced by ImGui.
     /// Also provides functions for updating ImGui input.
     /// </summary>
-    public class ImGuiRenderer : IDisposable, IRenderPass
+    public class ImGuiRenderer : IDisposable
     {
         private GraphicsDevice _gd;
         private readonly Assembly _assembly;
@@ -79,10 +79,10 @@ namespace Umbra.Rendering.ImGui
             _windowWidth = width;
             _windowHeight = height;
 
-            IntPtr context = ImGuiNET.ImGui.CreateContext();
-            ImGuiNET.ImGui.SetCurrentContext( context );
+            IntPtr context = ImGui.CreateContext();
+            ImGui.SetCurrentContext( context );
 
-            ImGuiNET.ImGui.GetIO().Fonts.AddFontDefault();
+            ImGui.GetIO().Fonts.AddFontDefault();
 
             CreateDeviceResources( gd, outputDescription );
             SetOpenTKKeyMappings();
@@ -174,7 +174,7 @@ namespace Umbra.Rendering.ImGui
             if( !_setsByView.TryGetValue( textureView, out ResourceSetInfo rsi ) )
             {
                 ResourceSet resourceSet = factory.CreateResourceSet( new ResourceSetDescription( _textureLayout, textureView ) );
-                rsi = new ResourceSetInfo( GetNextImGuiBindingId(), resourceSet );
+                rsi = new ResourceSetInfo( GetNextImGuiBindingID(), resourceSet );
 
                 _setsByView.Add( textureView, rsi );
                 _viewsById.Add( rsi.ImGuiBinding, rsi );
@@ -195,10 +195,10 @@ namespace Umbra.Rendering.ImGui
             }
         }
 
-        private IntPtr GetNextImGuiBindingId()
+        private IntPtr GetNextImGuiBindingID()
         {
-            int newId = _lastAssignedId++;
-            return ( IntPtr )newId;
+            int newID = _lastAssignedId++;
+            return ( IntPtr )newID;
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Umbra.Rendering.ImGui
         /// </summary>
         public unsafe void RecreateFontDeviceTexture( GraphicsDevice gd )
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             // Build
             io.Fonts.GetTexDataAsRGBA32( out byte* pixels, out int width, out int height, out int bytesPerPixel );
 
@@ -326,8 +326,8 @@ namespace Umbra.Rendering.ImGui
         /// </summary>
         public unsafe void Render( GraphicsDevice gd, CommandList cl )
         {
-            ImGuiNET.ImGui.Render();
-            RenderImDrawData( ImGuiNET.ImGui.GetDrawData(), gd, cl );
+            ImGui.Render();
+            RenderImDrawData( ImGui.GetDrawData(), gd, cl );
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace Umbra.Rendering.ImGui
             BeginUpdate( deltaSeconds );
             UpdateImGuiInput( snapshot );
          
-            ImGuiNET.ImGui.NewFrame();
+            ImGui.NewFrame();
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace Umbra.Rendering.ImGui
         /// </summary>
         private unsafe void SetPerFrameImGuiData( float deltaSeconds )
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             io.DisplaySize = new Vector2(
                 _windowWidth / _scaleFactor.X,
                 _windowHeight / _scaleFactor.Y );
@@ -366,7 +366,7 @@ namespace Umbra.Rendering.ImGui
 
         private unsafe void UpdateImGuiInput( InputSnapshot snapshot )
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
 
             // Determine if any of the mouse buttons were pressed during this snapshot period, even if they are no longer held.
             bool leftPressed = false;
@@ -402,7 +402,7 @@ namespace Umbra.Rendering.ImGui
             for( int i = 0; i < keyCharPresses.Count; i++ )
             {
                 char c = keyCharPresses[ i ];
-                ImGuiNET.ImGui.GetIO().AddInputCharacter( c );
+                ImGui.GetIO().AddInputCharacter( c );
             }
 
             IReadOnlyList< KeyEvent > keyEvents = snapshot.KeyEvents;
@@ -433,7 +433,7 @@ namespace Umbra.Rendering.ImGui
 
         private static unsafe void SetOpenTKKeyMappings()
         {
-            ImGuiIOPtr io = ImGuiNET.ImGui.GetIO();
+            ImGuiIOPtr io = ImGui.GetIO();
             io.KeyMap[ ( int )ImGuiKey.Tab ] = ( int )Key.Tab;
             io.KeyMap[ ( int )ImGuiKey.LeftArrow ] = ( int )Key.Left;
             io.KeyMap[ ( int )ImGuiKey.RightArrow ] = ( int )Key.Right;
@@ -504,7 +504,7 @@ namespace Umbra.Rendering.ImGui
 
             // Setup orthographic projection matrix into our constant buffer
             {
-                var io = ImGuiNET.ImGui.GetIO();
+                var io = ImGui.GetIO();
 
                 Matrix4x4 mvp = Matrix4x4.CreateOrthographicOffCenter(
                     0f,
@@ -522,7 +522,7 @@ namespace Umbra.Rendering.ImGui
             cl.SetPipeline( _pipeline );
             cl.SetGraphicsResourceSet( 0, _mainResourceSet );
 
-            draw_data.ScaleClipRects( ImGuiNET.ImGui.GetIO().DisplayFramebufferScale );
+            draw_data.ScaleClipRects( ImGui.GetIO().DisplayFramebufferScale );
 
             // Render command lists
             int vtx_offset = 0;

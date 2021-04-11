@@ -8,7 +8,7 @@ using Umbra.UI;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
-using ImGuiRenderer = Umbra.Rendering.ImGui.ImGuiRenderer;
+using ImGuiRenderer = Umbra.Rendering.ImGuiRenderer;
 
 namespace Umbra
 {
