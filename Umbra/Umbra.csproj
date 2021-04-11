@@ -20,7 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Assets\Shaders" />
-      <Folder Include="Rendering" />
     </ItemGroup>
     
     <ItemGroup>

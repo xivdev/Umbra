@@ -1,4 +1,4 @@
-﻿namespace Umbra.Rendering
+﻿namespace Umbra.Rendering.ImGui
 {
     /// <summary>
     /// Identifies the kind of color space handling that an <see cref="ImGuiRenderer"/> uses.
